@@ -4,113 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monthly Expense Tracker</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <h1>Monthly Expense Tracker</h1>
-        <form id="passwordForm">
+        <form id="loginForm">
             <label for="password">Enter Password:</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Submit</button>
+            <button type="submit">Login</button>
         </form>
-        <div id="expenses" style="display: none;">
-            <h2>Expense Categories</h2>
-            <div id="food" class="category">
-                <h3>Food</h3>
-                <ul id="foodList"></ul>
-                <p>Total: <span id="foodTotal">0</span></p>
-            </div>
-            <div id="utilities" class="category">
-                <h3>Utilities</h3>
-                <ul id="utilitiesList"></ul>
-                <p>Total: <span id="utilitiesTotal">0</span></p>
-            </div>
-            <div id="travel" class="category">
-                <h3>Travel</h3>
-                <ul id="travelList"></ul>
-                <p>Total: <span id="travelTotal">0</span></p>
-            </div>
-            <div id="other" class="category">
-                <h3>Other</h3>
-                <ul id="otherList"></ul>
-                <p>Total: <span id="otherTotal">0</span></p>
-            </div>
+        <div id="expenseForm" style="display: none;">
+            <h2>Add Expense</h2>
+            <form id="expenseEntry">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="food">Food</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="travel">Travel</option>
+                    <option value="other">Other</option>
+                </select><br><br>
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required><br><br>
+                <label for="amount">Amount (INR):</label>
+                <input type="number" id="amount" name="amount" min="0" step="0.01" required><br><br>
+                <button type="submit">Add Expense</button>
+            </form>
+        </div>
+        <div id="expenseList">
+            <!-- Expenses will be displayed here -->
         </div>
     </div>
+    <script src="script.js"></script>
 <script>
-document.getElementById("passwordForm").addEventListener("submit", function(event) {
+document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const password = document.getElementById("password").value;
-    if (password === "6969") {
-        document.getElementById("passwordForm").style.display = "none";
-        document.getElementById("expenses").style.display = "block";
-        // You can add further JavaScript functionality here to handle expense tracking
+    var password = document.getElementById('password').value;
+    if (password === '6969') {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('expenseForm').style.display = 'block';
+        showExpenses();
     } else {
-        alert("Incorrect password. Please try again.");
+        alert('Incorrect password. Please try again.');
     }
 });
+
+document.getElementById('expenseEntry').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var category = document.getElementById('category').value;
+    var description = document.getElementById('description').value;
+    var amount = parseFloat(document.getElementById('amount').value);
+
+    // You can add further validation if needed
+
+    // Example: Store expenses in localStorage for simplicity
+    var expense = {
+        category: category,
+        description: description,
+        amount: amount
+    };
+
+    var expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    expenses.push(expense);
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+
+    showExpenses();
+    document.getElementById('expenseEntry').reset(); // Reset form
+});
+
+function showExpenses() {
+    var expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    var expenseList = document.getElementById('expenseList');
+    expenseList.innerHTML = '';
+
+    expenses.forEach(function(expense) {
+        var expenseItem = document.createElement('div');
+        expenseItem.className = 'expense-item';
+        expenseItem.innerHTML = `
+            <p><strong>Category:</strong> ${expense.category}</p>
+            <p><strong>Description:</strong> ${expense.description}</p>
+            <p><strong>Amount:</strong> INR ${expense.amount}</p>
+            <hr>
+        `;
+        expenseList.appendChild(expenseItem);
+    });
+}
 </script>
-    <script src="script.js"></script>
 </body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
 .container {
-    max-width: 800px;
-    margin: 20px auto;
+    max-width: 600px;
+    margin: 0 auto;
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-h1, h2, h3 {
-    text-align: center;
+h1, h2 {
+    color: #333;
 }
 
 form {
-    text-align: center;
+    margin-bottom: 20px;
 }
 
-form input[type="password"] {
-    padding: 10px;
+label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select {
+    width: calc(100% - 20px);
+    padding: 8px;
     font-size: 16px;
-    border-radius: 4px;
     border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-form button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
-    background-color: #4CAF50;
-    color: white;
+button {
+    background-color: #007bff;
+    color: #fff;
     border: none;
+    padding: 10px 20px;
     cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
 }
 
-.category {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-ul li {
-    margin-bottom: 5px;
-}
-
-.category p {
-    font-weight: bold;
+button:hover {
+    background-color: #0056b3;
 }
 >
 </html>
